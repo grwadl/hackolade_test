@@ -1,16 +1,32 @@
-import cassandra from "cassandra-driver";
+import cassandraDriver from "cassandra-driver";
 import { dbConfigs } from "./configs.js";
+import { tableExporter, QueryEnum } from "./helpers.js";
+import { ORM } from "./orm.js";
 
-const query = `SELECT * FROM system_schema.tables WHERE keyspace_name = 'test';`;
-
-const client = new cassandra.Client({
-  contactPoints: [dbConfigs.HOSTNAME],
+const casandra = new cassandraDriver.Client({
+  contactPoints: [...dbConfigs.HOSTNAME],
   localDataCenter: dbConfigs.DATACENTER,
   keyspace: dbConfigs.KEYSPACE,
 });
 
-client.connect(function (err) {});
-client
-  .execute(query)
-  .then((res) => console.log(res.rows[0].table_name))
-  .catch((e) => console.log(e));
+const client = new ORM(casandra);
+
+try {
+  await client.connect();
+  const res = await client.rawQuery(
+    QueryEnum.GET_TABLES,
+    [dbConfigs.KEYSPACE],
+    {
+      prepare: true,
+    }
+  );
+  if (!res?.rows || res.rows.length <= 0) throw new Error("Your db is empty!");
+
+  for (const row of res.rows) {
+    await tableExporter.processTable(row, client);
+  }
+} catch (e) {
+  console.log(e);
+} finally {
+  client.closeConnection();
+}
