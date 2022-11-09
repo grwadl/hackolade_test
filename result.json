@@ -1,0 +1,23 @@
+[
+  {
+    "address": {
+      "type": "object",
+      "properties": {
+        "employee_id": { "type": "number" },
+        "residence_address": { "type": "string" },
+        "office_address": { "type": "string" },
+        "city": { "type": "string" }
+      }
+    },
+    "employee_id": { "type": "int" }
+  },
+  {
+    "race_position": { "type": "int" },
+    "win_list": { "type": "array", "items": { "type": "string" } },
+    "win_map": {
+      "type": "object",
+      "properties": { "1": { "type": "string" }, "2": { "type": "string" } }
+    },
+    "win_set": { "type": "array", "items": { "type": "string" } }
+  }
+]
