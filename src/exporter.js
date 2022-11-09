@@ -1,4 +1,3 @@
-import { dbConfigs } from "../configs.js";
 import { QueryEnum, errorEnum, ds, PrimitiveTypes } from "./enums.js";
 import {
   isDataPrimitiveString,
@@ -8,9 +7,9 @@ import {
 } from "./helpers.js";
 
 const tableExporter = Object.freeze({
-  async processTable({ table_name }, client) {
+  async processTable({ table_name, keyspace }, client) {
     const { rows: tableSchema } = await client.rawQuery(QueryEnum.GET_SCHEMA, [
-      dbConfigs.KEYSPACE,
+      keyspace,
       table_name,
     ]);
 
@@ -89,7 +88,7 @@ const tableExporter = Object.freeze({
         return this.complexTypeDetecter(
           {
             exampleValue: value,
-            fieldName: Array.isArray(value) ? "items" : key,
+            fieldName: key,
           },
           nestedFieldsSchema
         );

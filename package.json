@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha",
-    "dev": "node index.js"
+    "test": "NODE_ENV=test mocha --timeout 10000 tests/app.test.js --recursive --forbid-pending --exit",
+    "dev": "NODE_ENV=development node index.js"
   },
   "keywords": [],
   "author": "",

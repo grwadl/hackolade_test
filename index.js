@@ -1,9 +1,9 @@
 import cassandraDriver from "cassandra-driver";
-import { dbConfigs } from "./configs.js";
+import dbConfigs from "./configs.js";
 import { tableExporter } from "./src/exporter.js";
 import { QueryEnum, errorEnum } from "./src/enums.js";
 import { ORM } from "./src/orm.js";
-import fs from "fs";
+import { fileFriter } from "./src/helpers.js";
 
 const casandra = new cassandraDriver.Client({
   contactPoints: [...dbConfigs.HOSTNAME],
@@ -11,7 +11,7 @@ const casandra = new cassandraDriver.Client({
   keyspace: dbConfigs.KEYSPACE,
 });
 
-const fileName = "result.json";
+const fileName = new URL("./result.json", import.meta.url).pathname;
 
 const client = new ORM(casandra);
 
@@ -27,11 +27,13 @@ try {
   if (!res?.rows || res.rows.length <= 0) throw new Error(errorEnum.EMPTY_DB);
   let resultSchemas = [];
   for (const tableName of res.rows) {
-    const schema = await tableExporter.processTable(tableName, client);
+    const schema = await tableExporter.processTable(
+      { ...tableName, keyspace: dbConfigs.KEYSPACE },
+      client
+    );
     resultSchemas.push(schema);
   }
-  resultSchemas = JSON.stringify(resultSchemas);
-  fs.writeFileSync(fileName, resultSchemas);
+  fileFriter.write(resultSchemas, fileName);
 } catch (e) {
   console.log(e ?? errorEnum.CONNECTION);
 } finally {

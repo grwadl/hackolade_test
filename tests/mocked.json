@@ -1,0 +1,46 @@
+[
+  {
+    "type": "object",
+    "title": "test1",
+    "properties": {
+      "id": { "type": "int" },
+      "testlist": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": { "type": "string" },
+            "json": {
+              "type": "object",
+              "properties": {
+                "obj": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "nested": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "string" },
+                        "var": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": { "text": { "type": "string" } }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "testset": {
+        "type": "array",
+        "items": { "type": "array", "items": { "type": "number" } }
+      }
+    }
+  }
+]

@@ -1,4 +1,5 @@
 import { PrimitiveTypes, ComplexTypeRegexp } from "./enums.js";
+import fs from "fs";
 
 const matchJson = (data) =>
   typeof data === "string" && data.match(ComplexTypeRegexp.JSON);
@@ -19,10 +20,21 @@ const isDataPrimitiveString = ({ type }) =>
 
 const isObject = (val) => val === Object(val);
 
+const fileFriter = {
+  write(data, fileName) {
+    const resultSchemas = Array.isArray(data) ? data : [data];
+    fs.writeFileSync(fileName, JSON.stringify(resultSchemas));
+  },
+  read(fileName, encoding = "utf-8") {
+    return fs.readFileSync(fileName, { encoding });
+  },
+};
+
 export {
   isDataComplex,
   isDataPrimitiveString,
   tryParseJson,
   isObject,
   matchJson,
+  fileFriter,
 };
