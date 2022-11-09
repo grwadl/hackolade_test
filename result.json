@@ -13,8 +13,8 @@
         }
       },
       "employee_id": { "type": "int" },
-      "name": { "type": "text" },
-      "salary": { "type": "text" }
+      "name": { "type": "string" },
+      "salary": { "type": "string" }
     }
   },
   {
@@ -37,7 +37,12 @@
         "type": "array",
         "items": {
           "type": "object",
-          "properties": { "json": { "type": "string" } }
+          "properties": {
+            "json": {
+              "type": "object",
+              "properties": { "super": { "type": "string" } }
+            }
+          }
         }
       },
       "tset": {
@@ -50,7 +55,7 @@
     "type": "object",
     "title": "test_new",
     "properties": {
-      "race_name": { "type": "text" },
+      "race_name": { "type": "string" },
       "race_position": { "type": "int" },
       "win_list": { "type": "array", "items": { "type": "string" } },
       "win_map": {

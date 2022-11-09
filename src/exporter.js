@@ -1,54 +1,11 @@
-import { dbConfigs } from "./configs.js";
-
-const QueryEnum = {
-  GET_TABLES: `SELECT * FROM system_schema.tables WHERE keyspace_name=?`,
-  GET_SCHEMA:
-    "SELECT * FROM system_schema.columns WHERE keyspace_name = ? AND table_name = ?",
-};
-
-const PrimitiveTypes = {
-  text: "string",
-  varchar: "string",
-  timestamp: "string",
-  time: "string",
-  inet: "string",
-  date: "string",
-  ascii: "string",
-  timeuuid: "string",
-  uuid: "string",
-  bigint: "number",
-  boolean: "boolean",
-  counter: "number",
-  decimal: "number",
-  double: "number",
-  float: "number",
-  int: "number",
-  smallint: "number",
-  tinyint: "number",
-  varint: "number",
-};
-
-const ComplexTypeRegexp = {
-  ALL: new RegExp(/list<|set<|map</g),
-  LIST: new RegExp(/list/g),
-  SET: new RegExp(/set/g),
-  MAP: new RegExp(/map/g),
-  JSON: new RegExp(/{|}/g),
-};
-
-const tryParseJson = (data) => {
-  if (typeof data !== "string" || !data.match(ComplexTypeRegexp.JSON))
-    return false;
-  try {
-    return JSON.parse(data);
-  } catch (e) {
-    return false;
-  }
-};
-const isDataComplex = ({ type, exampleValue }) =>
-  type.match(ComplexTypeRegexp.ALL) || typeof exampleValue === "object";
-const isDataPrimitiveString = ({ type }) =>
-  PrimitiveTypes[type] && PrimitiveTypes[type] === "string";
+import { dbConfigs } from "../configs.js";
+import { QueryEnum, errorEnum, ds, PrimitiveTypes } from "./enums.js";
+import {
+  isDataPrimitiveString,
+  isDataComplex,
+  tryParseJson,
+  isObject,
+} from "./helpers.js";
 
 const tableExporter = Object.freeze({
   async processTable({ table_name }, client) {
@@ -62,41 +19,42 @@ const tableExporter = Object.freeze({
     } = await client.getOne(table_name);
 
     if (!tableData)
-      throw new Error(
-        `There is no data in your ${table_name} table. Please provide at least 1 row.`
-      );
+      throw new Error(`${errorEnum.EMPY_TABLE} ${table_name} table`);
 
     const tableSchemaAndData = tableSchema.map((col) => ({
       ...col,
       exampleValue: tableData[col.column_name],
     }));
 
-    const jsonSchema = { type: "object", title: table_name, properties: {} };
+    const jsonSchema = { type: ds.OBJECT, title: table_name, properties: {} };
     this.jsonSchemaParser(tableSchemaAndData, jsonSchema.properties);
     return jsonSchema;
   },
 
   jsonSchemaParser(table, schema) {
     table?.forEach((col) => {
-      if (!isDataPrimitiveString(col)) {
+      if (!isDataPrimitiveString(col))
         return !isDataComplex(col)
           ? (schema[col.column_name] = { type: col.type })
           : this.complexTypeDetecter(
               { ...col, fieldName: col.column_name },
               schema
             );
-        //TODO: complex data
-      } else {
+      else {
         const json = tryParseJson(col.exampleValue);
-        if (!json) return (schema[col.column_name] = { type: col.type });
-        console.log(col.column_name);
+        if (!json)
+          return (schema[col.column_name] = { type: PrimitiveTypes[col.type] });
+        return this.complexTypeDetecter(
+          { exampleValue: col.exampleValue, fieldName: col.column_name },
+          schema
+        );
       }
     });
   },
   complexTypeDetecter({ exampleValue, fieldName }, schema) {
     if (Array.isArray(exampleValue)) {
       schema[fieldName] = {
-        type: "array",
+        type: ds.ARRAY,
         items: {},
       };
 
@@ -109,7 +67,7 @@ const tableExporter = Object.freeze({
       );
 
       return schema;
-    } else if (exampleValue === Object(exampleValue)) {
+    } else if (isObject(exampleValue)) {
       const nestedFields = Object.keys(exampleValue).map((key) => ({
         value: exampleValue[key],
         key,
@@ -117,7 +75,15 @@ const tableExporter = Object.freeze({
 
       let nestedFieldsSchema = {};
       nestedFields.forEach(({ key, value }) => {
-        if (value !== Object(value))
+        const json = tryParseJson(value);
+        if (json) {
+          nestedFieldsSchema[key] = { type: ds.OBJECT };
+          return this.complexTypeDetecter(
+            { exampleValue: json, fieldName: key },
+            nestedFieldsSchema
+          );
+        }
+        if (!isObject(value))
           return (nestedFieldsSchema[key] = { type: typeof value });
         return this.complexTypeDetecter(
           {
@@ -129,7 +95,7 @@ const tableExporter = Object.freeze({
       });
 
       return (schema[fieldName] = {
-        type: "object",
+        type: ds.OBJECT,
         properties: nestedFieldsSchema,
       });
     }
@@ -146,4 +112,4 @@ const tableExporter = Object.freeze({
   },
 });
 
-export { QueryEnum, tableExporter };
+export { tableExporter };

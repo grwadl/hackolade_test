@@ -1,4 +1,4 @@
-// change this if new db
+// change this methods if to swap db
 class ORM {
   constructor(_dbInstance) {
     this.dbInstance = _dbInstance;

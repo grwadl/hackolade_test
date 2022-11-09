@@ -5,13 +5,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "dev": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cassandra-driver": "^4.6.4"
+    "cassandra-driver": "^4.6.4",
+    "chai": "^4.3.7",
+    "mocha": "^10.1.0"
   }
 }
