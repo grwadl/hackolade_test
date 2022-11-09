@@ -40,7 +40,19 @@
           "properties": {
             "json": {
               "type": "object",
-              "properties": { "super": { "type": "string" } }
+              "properties": {
+                "super": { "type": "string" },
+                "obj": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "number" },
+                    "obj": {
+                      "type": "object",
+                      "properties": { "lame": { "type": "boolean" } }
+                    }
+                  }
+                }
+              }
             }
           }
         }

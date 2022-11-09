@@ -73,7 +73,7 @@ const tableExporter = Object.freeze({
         key,
       }));
 
-      let nestedFieldsSchema = {};
+      const nestedFieldsSchema = {};
       nestedFields.forEach(({ key, value }) => {
         const json = tryParseJson(value);
         if (json) {
@@ -85,12 +85,13 @@ const tableExporter = Object.freeze({
         }
         if (!isObject(value))
           return (nestedFieldsSchema[key] = { type: typeof value });
+        nestedFields[key] = { type: ds.OBJECT };
         return this.complexTypeDetecter(
           {
             exampleValue: value,
-            fieldName: Array.isArray(value) ? "items" : "properties",
+            fieldName: Array.isArray(value) ? "items" : key,
           },
-          schema[fieldName]
+          nestedFieldsSchema
         );
       });
 
@@ -105,10 +106,7 @@ const tableExporter = Object.freeze({
         type: typeof exampleValue,
       });
     schema[fieldName] = {};
-    return this.complexTypeDetecter(
-      { exampleValue: json, fieldName },
-      schema[fieldName]
-    );
+    return this.complexTypeDetecter({ exampleValue: json, fieldName }, schema);
   },
 });
 
