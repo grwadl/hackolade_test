@@ -12,13 +12,11 @@ let client;
 const KEYSPACE_NAME = "hackolade_cassandra_test";
 const TABLE_NAME = "test1";
 const pathToJson = new URL("./test.results.json", import.meta.url).pathname;
-const pathToMockedJson = new URL("./test.results.json", import.meta.url)
-  .pathname;
+const pathToMockedJson = new URL("./test.results.json", import.meta.url).pathname;
 
 //change this db schema, json shema(mocked.json) and mocked data to customize your test
 
-const mockedSchema =
-  "testset set<frozen<list<int>>>, id int primary key, testlist list <frozen<map<text, text>>>";
+const mockedSchema = "testset set<frozen<list<int>>>, id int primary key, testlist list <frozen<map<text, text>>>";
 
 const mockedTableData = {
   testset: [
@@ -58,27 +56,18 @@ describe("testing app", () => {
   });
 
   it("should add table test(see the scheme below)", async () => {
-    const res = await client.rawQuery(
-      `create table IF NOT EXISTS ${KEYSPACE_NAME}.${TABLE_NAME} (${mockedSchema});`
-    );
+    const res = await client.rawQuery(`create table IF NOT EXISTS ${KEYSPACE_NAME}.${TABLE_NAME} (${mockedSchema});`);
     expect(res).to.be.a("object");
   });
 
   it("should insert values", async () => {
-    const res = await client.rawQuery(
-      `insert into ${KEYSPACE_NAME}.${TABLE_NAME} JSON '${JSON.stringify(
-        mockedTableData
-      )}'`
-    );
+    const res = await client.rawQuery(`insert into ${KEYSPACE_NAME}.${TABLE_NAME} JSON '${JSON.stringify(mockedTableData)}'`);
     expect(res).to.exist;
   });
 
   it("should export scheme correctly", async () => {
     await client.rawQuery(`USE ${KEYSPACE_NAME}`);
-    const res = await tableExporter.processTable(
-      { table_name: `${TABLE_NAME}`, keyspace: dbConfigs.KEYSPACE },
-      client
-    );
+    const res = await tableExporter.processTable({ table_name: `${TABLE_NAME}`, keyspace: dbConfigs.KEYSPACE }, client);
     fileFriter.write(res, pathToJson);
     const originalData = fileFriter.read(pathToJson);
     const mockedData = fileFriter.read(pathToMockedJson);

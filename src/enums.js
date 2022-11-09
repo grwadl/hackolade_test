@@ -1,7 +1,6 @@
 const QueryEnum = {
   GET_TABLES: `SELECT * FROM system_schema.tables WHERE keyspace_name=?`,
-  GET_SCHEMA:
-    "SELECT * FROM system_schema.columns WHERE keyspace_name = ? AND table_name = ?",
+  GET_SCHEMA: "SELECT * FROM system_schema.columns WHERE keyspace_name = ? AND table_name = ?",
 };
 
 const PrimitiveTypes = {

@@ -1,1 +1,62 @@
-[{"type":"object","title":"employee","properties":{"address":{"type":"object","properties":{"employee_id":{"type":"number"},"residence_address":{"type":"string"},"office_address":{"type":"string"},"city":{"type":"string"}}},"employee_id":{"type":"int"},"name":{"type":"string"},"salary":{"type":"string"}}},{"type":"object","title":"list_list","properties":{"dict":{"type":"array","items":{"type":"array","items":{"type":"string"}}},"id":{"type":"int"}}},{"type":"object","title":"ob_set","properties":{"id":{"type":"int"},"tlist":{"type":"array","items":{"type":"object","properties":{"json":{"type":"object","properties":{"super":{"type":"string"},"obj":{"type":"object","properties":{"id":{"type":"number"},"obj":{"type":"object","properties":{"lame":{"type":"boolean"}}}}}}}}}},"tset":{"type":"array","items":{"type":"array","items":{"type":"number"}}}}},{"type":"object","title":"test_new","properties":{"race_name":{"type":"string"},"race_position":{"type":"int"},"win_list":{"type":"array","items":{"type":"string"}},"win_map":{"type":"object","properties":{"1":{"type":"string"},"2":{"type":"string"}}},"win_set":{"type":"array","items":{"type":"string"}}}}]
+[
+  {
+    "type": "object",
+    "title": "employee",
+    "properties": {
+      "address": {
+        "type": "object",
+        "properties": {
+          "employee_id": { "type": "number" },
+          "residence_address": { "type": "string" },
+          "office_address": { "type": "string" },
+          "city": { "type": "string" }
+        }
+      },
+      "employee_id": { "type": "number" },
+      "name": { "type": "string" },
+      "salary": { "type": "string" }
+    }
+  },
+  {
+    "type": "object",
+    "title": "list_list",
+    "properties": { "dict": { "type": "array", "items": { "type": "array", "items": { "type": "string" } } }, "id": { "type": "number" } }
+  },
+  {
+    "type": "object",
+    "title": "ob_set",
+    "properties": {
+      "id": { "type": "number" },
+      "tlist": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "json": {
+              "type": "object",
+              "properties": {
+                "super": { "type": "string" },
+                "obj": {
+                  "type": "object",
+                  "properties": { "id": { "type": "number" }, "obj": { "type": "object", "properties": { "lame": { "type": "boolean" } } } }
+                }
+              }
+            }
+          }
+        }
+      },
+      "tset": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } }
+    }
+  },
+  {
+    "type": "object",
+    "title": "test_new",
+    "properties": {
+      "race_name": { "type": "string" },
+      "race_position": { "type": "number" },
+      "win_list": { "type": "array", "items": { "type": "string" } },
+      "win_map": { "type": "object", "properties": { "1": { "type": "string" }, "2": { "type": "string" } } },
+      "win_set": { "type": "array", "items": { "type": "string" } }
+    }
+  }
+]
