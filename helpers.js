@@ -33,12 +33,18 @@ const ComplexTypeRegexp = {
   LIST: new RegExp(/list/g),
   SET: new RegExp(/set/g),
   MAP: new RegExp(/map/g),
-  JSON: new RegExp(),
+  JSON: new RegExp(/{|}/g),
 };
 
-const isDataJsonSerialized = ({ exampleValue }) =>
-  typeof exampleValue === "string" &&
-  exampleValue.match(ComplexTypeRegexp.JSON); //check for {}
+const tryParseJson = (data) => {
+  if (typeof data !== "string" || !data.match(ComplexTypeRegexp.JSON))
+    return false;
+  try {
+    return JSON.parse(data);
+  } catch (e) {
+    return false;
+  }
+};
 const isDataComplex = ({ type, exampleValue }) =>
   type.match(ComplexTypeRegexp.ALL) || typeof exampleValue === "object";
 const isDataPrimitiveString = ({ type }) =>
@@ -65,8 +71,8 @@ const tableExporter = Object.freeze({
       exampleValue: tableData[col.column_name],
     }));
 
-    const jsonSchema = {};
-    this.jsonSchemaParser(tableSchemaAndData, jsonSchema);
+    const jsonSchema = { type: "object", title: table_name, properties: {} };
+    this.jsonSchemaParser(tableSchemaAndData, jsonSchema.properties);
     return jsonSchema;
   },
 
@@ -81,60 +87,62 @@ const tableExporter = Object.freeze({
             );
         //TODO: complex data
       } else {
-        if (!isDataJsonSerialized(col))
-          return (schema[col.column_name] = { type: col.type });
-
-        try {
-          const parsedJSON = JSON.parse(col.exampleValue);
-        } catch (e) {}
+        const json = tryParseJson(col.exampleValue);
+        if (!json) return (schema[col.column_name] = { type: col.type });
+        console.log(col.column_name);
       }
     });
   },
   complexTypeDetecter({ exampleValue, fieldName }, schema) {
     if (Array.isArray(exampleValue)) {
-      const isContainingPrimitive = exampleValue[0] !== Object(exampleValue[0]);
       schema[fieldName] = {
         type: "array",
         items: {},
       };
-      schema[fieldName].items = {
-        type: isContainingPrimitive
-          ? typeof exampleValue[0]
-          : this.complexTypeDetecter(
-              {
-                exampleValue: exampleValue[0],
-                fieldName: Array.isArray(exampleValue[0])
-                  ? "items"
-                  : "properties",
-              },
-              schema.items
-            ),
-      };
-      return schema;
-    }
 
-    const nestedFields = Object.keys(exampleValue).map((key) => ({
-      value: exampleValue[key],
-      key,
-    }));
-
-    let nestedFieldsSchema = {};
-    nestedFields.forEach(({ key, value }) => {
-      if (value !== Object(value))
-        return (nestedFieldsSchema[key] = { type: typeof value });
-      return this.complexTypeDetecter(
+      this.complexTypeDetecter(
         {
-          exampleValue: value,
-          fieldName: Array.isArray(value) ? "items" : "properties",
+          exampleValue: exampleValue[0],
+          fieldName: "items",
         },
         schema[fieldName]
       );
-    });
 
-    schema[fieldName] = {
-      type: "object",
-      properties: nestedFieldsSchema,
-    };
+      return schema;
+    } else if (exampleValue === Object(exampleValue)) {
+      const nestedFields = Object.keys(exampleValue).map((key) => ({
+        value: exampleValue[key],
+        key,
+      }));
+
+      let nestedFieldsSchema = {};
+      nestedFields.forEach(({ key, value }) => {
+        if (value !== Object(value))
+          return (nestedFieldsSchema[key] = { type: typeof value });
+        return this.complexTypeDetecter(
+          {
+            exampleValue: value,
+            fieldName: Array.isArray(value) ? "items" : "properties",
+          },
+          schema[fieldName]
+        );
+      });
+
+      return (schema[fieldName] = {
+        type: "object",
+        properties: nestedFieldsSchema,
+      });
+    }
+    const json = tryParseJson(exampleValue);
+    if (!json)
+      return (schema[fieldName] = {
+        type: typeof exampleValue,
+      });
+    schema[fieldName] = {};
+    return this.complexTypeDetecter(
+      { exampleValue: json, fieldName },
+      schema[fieldName]
+    );
   },
 });
 

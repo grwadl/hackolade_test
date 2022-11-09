@@ -29,7 +29,6 @@ try {
   }
   resultSchemas = JSON.stringify(resultSchemas);
   fs.writeFileSync("result.json", resultSchemas);
-  fs;
 } catch (e) {
   console.log(e);
 } finally {
