@@ -8,25 +8,29 @@ import { fileFriter } from "./src/helpers.js";
 const casandra = new cassandraDriver.Client({
   contactPoints: [...dbConfigs.HOSTNAME],
   localDataCenter: dbConfigs.DATACENTER,
-  keyspace: dbConfigs.KEYSPACE,
+  keyspace: dbConfigs.KEYSPACE
 });
 
 const fileName = new URL("./result.json", import.meta.url).pathname;
 
 const client = new ORM(casandra);
 
+//ensure u added serialized json properly
+
 try {
   await client.connect();
   const res = await client.rawQuery(QueryEnum.GET_TABLES, [dbConfigs.KEYSPACE], {
-    prepare: true,
+    prepare: true
   });
   if (!res?.rows || res.rows.length <= 0) throw new Error(errorEnum.EMPTY_DB);
   let resultSchemas = [];
   for (const tableName of res.rows) {
+    console.log(`Exporting from ${tableName?.table_name} table...`);
     const schema = await tableExporter.processTable({ ...tableName, keyspace: dbConfigs.KEYSPACE }, client);
     resultSchemas.push(schema);
   }
   fileFriter.write(resultSchemas, fileName);
+  console.log(`Finished exporting schemas from ${res?.rows?.length} tables!`);
 } catch (e) {
   console.log(e ?? errorEnum.CONNECTION);
 } finally {

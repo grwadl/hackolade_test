@@ -1,7 +1,7 @@
 [
   {
-    "type": "object",
     "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
     "title": "test1",
     "properties": {
       "id": { "type": "number" },

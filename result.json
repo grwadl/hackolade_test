@@ -1,7 +1,7 @@
 [
   {
-    "type": "object",
     "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
     "title": "employee",
     "properties": {
       "address": {
@@ -19,14 +19,49 @@
     }
   },
   {
-    "type": "object",
     "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+    "title": "last_test",
+    "properties": {
+      "boolvar": { "type": "boolean" },
+      "commonlist": { "type": "array", "items": { "type": "number" } },
+      "id": { "type": "number" },
+      "testmap": {
+        "type": "object",
+        "properties": {
+          "1": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "raw": { "type": "string" },
+                "nested": {
+                  "type": "object",
+                  "properties": {
+                    "var": { "type": "string" },
+                    "foo": {
+                      "type": "array",
+                      "items": { "type": "object", "properties": { "bar": { "type": "array", "items": { "type": "string" } } } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "uuid": { "type": "string" }
+    }
+  },
+  {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
     "title": "list_list",
     "properties": { "dict": { "type": "array", "items": { "type": "array", "items": { "type": "string" } } }, "id": { "type": "number" } }
   },
   {
-    "type": "object",
     "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
     "title": "ob_set",
     "properties": {
       "id": { "type": "number" },
@@ -52,8 +87,8 @@
     }
   },
   {
-    "type": "object",
     "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
     "title": "test_new",
     "properties": {
       "race_name": { "type": "string" },

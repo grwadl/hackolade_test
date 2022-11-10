@@ -17,9 +17,8 @@ const tableExporter = Object.freeze({
     }));
 
     const jsonSchema = {
-      type: ds.OBJECT,
-      type: ds.OBJECT,
       $schema: "http://json-schema.org/draft-04/schema#",
+      type: ds.OBJECT,
       title: table_name,
       properties: {}
     };

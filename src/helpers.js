@@ -11,7 +11,8 @@ const tryParseJson = (data) => {
     return false;
   }
 };
-const isDataComplex = ({ type, exampleValue }) => type.match(ComplexTypeRegexp.ALL) || typeof exampleValue === "object";
+const isDataComplex = ({ type, exampleValue }) =>
+  (type.match(ComplexTypeRegexp.ALL) || (typeof exampleValue === "object" && exampleValue !== null)) && !PrimitiveTypes[type];
 
 const isDataPrimitiveString = ({ type }) => PrimitiveTypes[type] && PrimitiveTypes[type] === "string";
 
@@ -24,7 +25,7 @@ const fileFriter = {
   },
   read(fileName, encoding = "utf-8") {
     return fs.readFileSync(fileName, { encoding });
-  },
+  }
 };
 
 export { isDataComplex, isDataPrimitiveString, tryParseJson, isObject, matchJson, fileFriter };
