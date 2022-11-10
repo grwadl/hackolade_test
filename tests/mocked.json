@@ -1,9 +1,10 @@
 [
   {
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "title": "test1",
     "properties": {
-      "id": { "type": "int" },
+      "id": { "type": "number" },
       "testlist": {
         "type": "array",
         "items": {
@@ -21,13 +22,7 @@
                       "type": "object",
                       "properties": {
                         "id": { "type": "string" },
-                        "var": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": { "text": { "type": "string" } }
-                          }
-                        }
+                        "var": { "type": "array", "items": { "type": "object", "properties": { "text": { "type": "string" } } } }
                       }
                     }
                   }
@@ -37,10 +32,7 @@
           }
         }
       },
-      "testset": {
-        "type": "array",
-        "items": { "type": "array", "items": { "type": "number" } }
-      }
+      "testset": { "type": "array", "items": { "type": "array", "items": { "type": "number" } } }
     }
   }
 ]
