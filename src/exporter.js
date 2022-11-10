@@ -16,7 +16,13 @@ const tableExporter = Object.freeze({
       exampleValue: tableData[col.column_name]
     }));
 
-    const jsonSchema = { type: ds.OBJECT, title: table_name, properties: {} };
+    const jsonSchema = {
+      type: ds.OBJECT,
+      type: ds.OBJECT,
+      $schema: "http://json-schema.org/draft-04/schema#",
+      title: table_name,
+      properties: {}
+    };
     this.jsonSchemaParser(tableSchemaAndData, jsonSchema.properties);
     return jsonSchema;
   },
@@ -43,44 +49,27 @@ const tableExporter = Object.freeze({
         items: {}
       };
 
-      this.complexTypeDetecter(
+      return this.complexTypeDetecter(
         {
           exampleValue: exampleValue[0],
           fieldName: "items"
         },
         schema[fieldName]
       );
-
-      return schema;
     } else if (isObject(exampleValue)) {
-      const nestedFields = Object.keys(exampleValue).map((key) => ({
-        value: exampleValue[key],
-        key
-      }));
+      schema[fieldName] = { type: ds.OBJECT, properties: {} };
 
-      const nestedFieldsSchema = {};
-      nestedFields.forEach(({ key, value }) => {
-        const json = tryParseJson(value);
-        if (json) {
-          nestedFieldsSchema[key] = { type: ds.OBJECT };
-          return this.complexTypeDetecter({ exampleValue: json, fieldName: key }, nestedFieldsSchema);
-        }
-        if (!isObject(value)) return (nestedFieldsSchema[key] = { type: typeof value });
-        nestedFields[key] = { type: ds.OBJECT };
-        return this.complexTypeDetecter(
+      return Object.keys(exampleValue).forEach((key) => {
+        this.complexTypeDetecter(
           {
-            exampleValue: value,
+            exampleValue: exampleValue[key],
             fieldName: key
           },
-          nestedFieldsSchema
+          schema[fieldName].properties
         );
       });
-
-      return (schema[fieldName] = {
-        type: ds.OBJECT,
-        properties: nestedFieldsSchema
-      });
     }
+
     const json = tryParseJson(exampleValue);
     return !json
       ? (schema[fieldName] = {

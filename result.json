@@ -1,6 +1,7 @@
 [
   {
     "type": "object",
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "employee",
     "properties": {
       "address": {
@@ -19,11 +20,13 @@
   },
   {
     "type": "object",
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "list_list",
     "properties": { "dict": { "type": "array", "items": { "type": "array", "items": { "type": "string" } } }, "id": { "type": "number" } }
   },
   {
     "type": "object",
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "ob_set",
     "properties": {
       "id": { "type": "number" },
@@ -50,6 +53,7 @@
   },
   {
     "type": "object",
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "test_new",
     "properties": {
       "race_name": { "type": "string" },

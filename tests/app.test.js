@@ -14,14 +14,14 @@ const TABLE_NAME = "test1";
 const pathToJson = new URL("./test.results.json", import.meta.url).pathname;
 const pathToMockedJson = new URL("./test.results.json", import.meta.url).pathname;
 
-//change this db schema, json shema(mocked.json) and mocked data to customize your test
+//you can change this db schema, json shema(mocked.json) and mocked data to customize your test
 
 const mockedSchema = "testset set<frozen<list<int>>>, id int primary key, testlist list <frozen<map<text, text>>>";
 
 const mockedTableData = {
   testset: [
     [1, 2],
-    [3, 4],
+    [3, 4]
   ],
   id: 1,
   testlist: [
@@ -30,18 +30,18 @@ const mockedTableData = {
       json: JSON.stringify({
         obj: {
           id: "1 level deep",
-          nested: { id: "2 level deep", var: [{ text: "some text" }] },
-        },
-      }),
-    },
-  ],
+          nested: { id: "2 level deep", var: [{ text: "some text" }] }
+        }
+      })
+    }
+  ]
 };
 
 describe("testing app", () => {
   beforeEach(async () => {
     const casandra = new cassandraDriver.Client({
       contactPoints: dbConfigs.HOSTNAME,
-      localDataCenter: dbConfigs.DATACENTER,
+      localDataCenter: dbConfigs.DATACENTER
     });
 
     client = new ORM(casandra);
